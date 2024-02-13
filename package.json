@@ -1,0 +1,29 @@
+{
+    "name": "md-to-svelte",
+    "version": "0.0.4",
+    "description": "Convert markdown file to svelte.",
+    "main": "package/build/main.js",
+    "files": [
+        "./package/build"
+    ],
+    "keywords": [
+        "TypeScript",
+        "Markdown",
+        "Svelte",
+        "Md"
+    ],
+    "author": "DevelopedByAnt",
+    "license": "ISC",
+    "type": "module",
+    "repository": {
+        "url": "https://github.com/developedbyant/md-to-svelte"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.17"
+    },
+    "dependencies": {
+        "globby": "^14.0.1",
+        "marked": "^12.0.0",
+        "shiki": "^1.1.2"
+    }
+}

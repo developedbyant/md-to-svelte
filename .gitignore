@@ -1,0 +1,6 @@
+.vscode
+test
+package/build
+node_modules
+pages
+/src/
