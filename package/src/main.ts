@@ -37,6 +37,8 @@ export type Result = {
         new:boolean
         /** Headers founded in file */
         headers:{ id: string,text: string }[]
+        /** All meta data from file */
+        [key:string]:any
     }[]
 }
 
@@ -123,9 +125,10 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appNam
         if(!result[pageLayout]) result[pageLayout] = []
         // add page link
         result[pageLayout].push({
+            ...page.metaData,
             title: page.metaData.title,
             // remove last / if exists
-            href: slug==="" ? `/docs` : `/docs/${slug}`,
+            href: slug==="" ? `/` : slug,
             description: page.metaData.description,
             new: page.metaData.new ? true : false,
             headers:page.headers
