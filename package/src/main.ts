@@ -20,9 +20,11 @@ export type CurrentPage = {
     css:string
     /** Page meta data tags (required) */
     metaData:MetaData
+    /** Headers founded in file */
+    headers:{ id: string,text: string }[]
 }
 /** Data returned from function */
-type Result = {
+export type Result = {
     /** Page layout key */
     [key:string]:{
         /** Page link (href) */
@@ -33,6 +35,8 @@ type Result = {
         description:string
         /** Indicate if it's a new feature (add badge next to link) */
         new:boolean
+        /** Headers founded in file */
+        headers:{ id: string,text: string }[]
     }[]
 }
 
@@ -77,7 +81,7 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appNam
     for(const markdownPath of oldMarkdowns){ fs.rmSync(markdownPath, { recursive: true, force: true }) }
     // loop all markdown files
     for(const markdownPath of markdowns){
-        const page:CurrentPage = { jsCode: "", code: "", css: "", metaData: {} }
+        const page:CurrentPage = { jsCode: "", code: "", css: "", metaData: {},headers:[] }
         /** Clean md path after removing [..] */
         const cleanMarkdownPath = markdownPath.replace(/\[\d+\]/g, '').replace(`${process.cwd()}/pages/`,"")
         /** Slug for markdown path */
@@ -122,7 +126,8 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appNam
             title: page.metaData.title,
             href: `/docs/${slug}`,
             description: page.metaData.description,
-            new: page.metaData.new ? true : false
+            new: page.metaData.new ? true : false,
+            headers:page.headers
         })
     }
     // return data

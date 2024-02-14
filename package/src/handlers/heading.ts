@@ -20,5 +20,7 @@ export default function(token:Tokens.Heading | Tokens.Generic,page:CurrentPage){
         const id = utils.slug(token.text).trim().toLowerCase()
         const code = `<h${token.depth} data-section data-md="header" id="${id}">\n    ${token.text}\n</h${token.depth}>\n`
         page.code += code
+        // add header to page headers
+        page.headers.push({ id,text:token.text })
     }
 }
