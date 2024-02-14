@@ -124,7 +124,8 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appNam
         // add page link
         result[pageLayout].push({
             title: page.metaData.title,
-            href: `/docs/${slug}`,
+            // remove last / if exists
+            href: slug==="" ? `/docs` : `/docs/${slug}`,
             description: page.metaData.description,
             new: page.metaData.new ? true : false,
             headers:page.headers
