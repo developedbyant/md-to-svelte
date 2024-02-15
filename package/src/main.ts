@@ -42,29 +42,42 @@ export type Result = {
     }[]
 }
 
+/** Function options */
+export type Options = {
+    /** App name, so we can use to add app name after title example title here | appName */
+    appName:string
+    /** Website domain, it's use to add to meta data url property */
+    domainUrl:string
+    /** Default image to use when there was not image founded on markdown meta tag */
+    defaultImage:string
+    /** If set to true, it will delete everything on parent folder example /docs/ will delete everything in folder docs */
+    devMode?:boolean
+}
+
 /** Create page tags */
-function createPage(page:CurrentPage,appName:string){
+function createPage(page:CurrentPage,options:Options){
+    const domainUrl = options.domainUrl.endsWith("/") ? options.domainUrl.slice(0,-1) : options.domainUrl
     let pageCode:string = ""
     // add css
     if(page.jsCode) pageCode += `<script lang="ts">\n${page.jsCode}\n</script>\n`
     // add page code
     pageCode += `\n<svelte:head>
     <!-- Primary Meta Tags -->
-    <title>${page.metaData.title} | ${appName}</title>
-    <meta name="title" content="${page.metaData.title} | ${appName}" />
+    <title>${page.metaData.title} | ${options.appName}</title>
+    <meta name="title" content="${page.metaData.title} | ${options.appName}" />
     <meta name="description" content="${page.metaData.description}" />
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="${page.metaData.href}" />
-    <meta property="og:title" content="${page.metaData.title} | ${appName}" />
+    <meta property="og:url" content="${domainUrl+page.metaData.href}" />
+    <meta property="og:title" content="${page.metaData.title} | ${options.appName}" />
     <meta property="og:description" content="${page.metaData.description}" />
-    <meta property="og:image" content="${ page.metaData.image ? page.metaData.image : "https://developedbyant.com/images/backdrop.png"}" />
+    <meta property="og:image" content="${ page.metaData.image ? page.metaData.image : options.defaultImage}" />
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="${page.metaData.href}" />
-    <meta property="twitter:title" content="${page.metaData.title} | ${appName}" />
+    <meta property="twitter:url" content="${domainUrl+page.metaData.href}" />
+    <meta property="twitter:title" content="${page.metaData.title} | ${options.appName}" />
     <meta property="twitter:description" content="${page.metaData.description}" />
-    <meta property="twitter:image" content="${ page.metaData.image ? page.metaData.image : "https://developedbyant.com/images/backdrop.png"}" />
+    <meta property="twitter:image" content="${ page.metaData.image ? page.metaData.image : options.defaultImage}" />
 </svelte:head>\n`+page.code
     // add custom style
     if(page.css) pageCode += `<style>\n${page.css}</style>`
@@ -74,13 +87,15 @@ function createPage(page:CurrentPage,appName:string){
 
 /** Convert markdown file to svelte
  * @param outPutDir - Directory to save converted markdown  */
-export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appName:string){
+export default async function mdToSvelte(outPutDir:`src/routes/${string}`,options:Options){
     /** Result to be returned */
     const result:Result = { }
     const markdowns = await globby(`${process.cwd()}/pages/`,{expandDirectories:{files: ['*.md']}})
     // delete all generated directories in docs folder
-    const oldMarkdowns = await globby(`${outPutDir.endsWith("/") ? outPutDir.slice(0,-1) : outPutDir}/**`,{ onlyDirectories:true })
-    for(const markdownPath of oldMarkdowns){ fs.rmSync(markdownPath, { recursive: true, force: true }) }
+    if(options.devMode){
+        const oldMarkdowns = await globby(`${outPutDir.endsWith("/") ? outPutDir.slice(0,-1) : outPutDir}/**`,{ onlyDirectories:true })
+        for(const markdownPath of oldMarkdowns){ fs.rmSync(markdownPath, { recursive: true, force: true }) }
+    }
     // loop all markdown files
     for(const markdownPath of markdowns){
         const page:CurrentPage = { jsCode: "", code: "", css: "", metaData: {},headers:[] }
@@ -115,7 +130,7 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appNam
         page.metaData.href = publicHref
         // create
         fs.mkdirSync(path.dirname(sveltePagePath), { recursive: true });
-        fs.writeFileSync(sveltePagePath,createPage(page,appName))
+        fs.writeFileSync(sveltePagePath,createPage(page,options))
 
         // console.log(`<<<<<<<<<<<<<< O >>>>>>>>>>>>>\n`)
         // console.log(`${cleanMarkdownPath}\n${slug}\n${sveltePagePath}\n${publicHref}`)
@@ -128,7 +143,8 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appNam
             ...page.metaData,
             title: page.metaData.title,
             // remove last / if exists
-            href: slug==="" ? `/` : slug,
+            href:page.metaData.href.endsWith("/") ? page.metaData.href.slice(0,-1) : page.metaData.href,
+            // href: slug==="" ? `/` : slug,
             description: page.metaData.description,
             new: page.metaData.new ? true : false,
             headers:page.headers
@@ -141,15 +157,21 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,appNam
 
 /** Convert markdown file to svelte
  * @param outPutDir - Directory to save converted markdown  */
-export async function viteMdToSvelte(outPutDir:`src/routes/${string}`,appName:string) {
+export async function viteMdToSvelte(outPutDir:`src/routes/${string}`,options:Options) {
 	return {
 		name: 'md-to-svelte',
 		handleHotUpdate(data:{ file:string,server:any }) {
             const run = ( data.file.endsWith(".md") && data.server.config.mode==="development" )
-			if(run) mdToSvelte(outPutDir,appName)
+			if(run) mdToSvelte(outPutDir,options)
 		},
 	}
 }
 
-// await mdToSvelte("src/routes/docs/","TestApp")
-// console.log(await mdToSvelte("src/routes/docs/","TestApp"))
+// await mdToSvelte("src/routes/blog/",{
+//     appName:"TestApp",domainUrl:"https://developedbyant.com",
+//     defaultImage:"https://developedbyant.com/images/backdrop.png"
+// })
+// console.log(await mdToSvelte("src/routes/blog/",{
+//     appName:"TestApp",domainUrl:"https://developedbyant.com",
+//     defaultImage:"https://developedbyant.com/images/backdrop.png"
+// }))
