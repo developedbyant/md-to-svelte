@@ -125,7 +125,8 @@ export default async function mdToSvelte(outPutDir:`src/routes/${string}`,option
         //@ts-ignore create page
         outPutDir = outPutDir.endsWith("/") ? outPutDir.slice(0,-1) : outPutDir // remove / from outPutDir if exists
         const sveltePagePath = `${outPutDir}/${slug}/+page.svelte`.replace("//","/")
-        const publicHref = `${outPutDir}/${slug}`.replace("//","/").replace('src/routes',"")
+        // .replace(/\/\([^)]*\)/g, "") remove folder link (app)
+        const publicHref = `${outPutDir}/${slug}`.replace("//","/").replace('src/routes',"").replace(/\/\([^)]*\)/g, "")
         // add href to meta data
         page.metaData.href = publicHref
         // create
@@ -171,7 +172,7 @@ export async function viteMdToSvelte(outPutDir:`src/routes/${string}`,options:Op
 //     appName:"TestApp",domainUrl:"https://developedbyant.com",
 //     defaultImage:"https://developedbyant.com/images/backdrop.png"
 // })
-// console.log(await mdToSvelte("src/routes/blog/",{
-//     appName:"TestApp",domainUrl:"https://developedbyant.com",
-//     defaultImage:"https://developedbyant.com/images/backdrop.png"
-// }))
+console.log(await mdToSvelte("src/routes/(app)/blog/",{
+    appName:"TestApp",domainUrl:"https://developedbyant.com",
+    defaultImage:"https://developedbyant.com/images/backdrop.png"
+}))
