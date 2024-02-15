@@ -1,6 +1,6 @@
 {
     "name": "md-to-svelte",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "Convert markdown file to svelte.",
     "main": "package/build/main.js",
     "files": [

@@ -172,7 +172,7 @@ export async function viteMdToSvelte(outPutDir:`src/routes/${string}`,options:Op
 //     appName:"TestApp",domainUrl:"https://developedbyant.com",
 //     defaultImage:"https://developedbyant.com/images/backdrop.png"
 // })
-console.log(await mdToSvelte("src/routes/(app)/blog/",{
-    appName:"TestApp",domainUrl:"https://developedbyant.com",
-    defaultImage:"https://developedbyant.com/images/backdrop.png"
-}))
+// console.log(await mdToSvelte("src/routes/(app)/blog/",{
+//     appName:"TestApp",domainUrl:"https://developedbyant.com",
+//     defaultImage:"https://developedbyant.com/images/backdrop.png"
+// }))
